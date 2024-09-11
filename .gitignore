@@ -1,0 +1,12 @@
+# Verilog
+*.vcd
+*.vpd
+*.fdb_latexmk
+*.fdb
+*.fls
+*.synopsys
+*.xilinx
+# VSCode
+.vscode/
+.history/
+*.code-workspace
