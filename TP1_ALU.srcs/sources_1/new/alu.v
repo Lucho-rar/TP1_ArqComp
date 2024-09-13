@@ -1,24 +1,4 @@
 `timescale 1ns / 1ps
-//////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
-// Create Date: 06.09.2024 09:17:48
-// Design Name: 
-// Module Name: main
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
-// 
-// Dependencies: 
-// 
-// Revision:
-// Revision 0.01 - File Created
-// Additional Comments:
-// 
-//////////////////////////////////////////////////////////////////////////////////
-
 
 module alu #
 (
@@ -47,7 +27,7 @@ always@(*) begin
         6'b000011: tmp = i_data_a >>> i_data_b;
         6'b000010: tmp = i_data_a >> i_data_b;
         6'b100111: tmp = ~(i_data_a | i_data_b);
-        default: tmp = 0;
+        default: tmp =  {NB_DATA{1'b0}};
     endcase
 end
 
