@@ -10,7 +10,7 @@ module top
     (
     input wire [NB_BITS-1:0] i_switch, //input of switch
     input wire [NB_BUTTON-1:0] i_button, //input of buttons
-    input wire i_clk, //input clock
+    input wire clk, //input clock
     output signed [NB_DATA-1:0] o_leds   //output of leds
     );
     
@@ -35,7 +35,7 @@ module top
         .o_data(o_leds)
     );
     
-    always@(posedge i_clk) begin:inputs
+    always@(posedge clk) begin:inputs
         case(i_button)
         btn_data_a: i_data_a <= i_switch;
         btn_data_b: i_data_b <= i_switch;

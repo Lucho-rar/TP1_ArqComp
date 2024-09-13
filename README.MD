@@ -76,6 +76,7 @@ endmodule
 <p align="center">
   <img src="./img/rtl.png"><br>
   <em>Fig. RTL</em>
+<<<<<<< HEAD
 </p>
 
 Primera simulacion
@@ -173,3 +174,6 @@ endmodule
   <em>Fig. primera simulacion</em>
 </p>
 
+=======
+</p>
+>>>>>>> 4dd75f18989a3dde6170225fe08873b7885a55f9

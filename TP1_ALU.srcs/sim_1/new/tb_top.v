@@ -26,7 +26,7 @@ module tb_top();
     // Señales
     reg [NB_BITS-1:0] i_switch; // Entrada de switches
     reg [NB_BUTTON-1:0] i_button; // Entrada de botones
-    reg i_clk; // Señal de reloj
+    reg clk; // Señal de reloj
     wire [NB_DATA-1:0] o_leds; // Salida de leds
     
     // Instancia del módulo top
@@ -40,12 +40,12 @@ module tb_top();
     top_instance(
         .i_switch(i_switch),
         .i_button(i_button),
-        .i_clk(i_clk),
+        .clk(clk),
         .o_leds(o_leds)
     );
     
     // Generador del reloj
-    always #10 i_clk = ~i_clk;
+    always #10 clk = ~clk;
     
     // Bloque inicial
     initial begin 
@@ -60,7 +60,7 @@ module tb_top();
         op_codes[7] = NOR;
 
         // Inicializar el reloj
-        i_clk = 0;
+        clk = 0;
 
         // Probar cada operación
         for (i = 0; i < 8; i = i + 1) begin
