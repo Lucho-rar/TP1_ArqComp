@@ -1,0 +1,38 @@
+Time resolution is 1 ps
+Op: 100000, A:  0, B:  2, Resultado:  2
+Op: 100010, A:  2, B:  2, Resultado:  8
+Op: 100100, A:  4, B:  2, Resultado:  4
+Op: 100101, A:  5, B:  2, Resultado:  7
+Op: 100110, A:  6, B:  2, Resultado:  6
+Op: 000011, A:  3, B:  0, Resultado:  0
+Op: 000010, A:  2, B:  0, Resultado:  0
+Op: 100111, A:  7, B:  2, Resultado:  4
+$finish called at time : 880 ns : File "G:/ProjectsVivado/TP1_ALU/TP1_ALU.srcs/sim_1/new/tb_top.v" Line 97
+Op: 100000, A:  0, B:  2, Resultado:  2
+Op: 100010, A:  2, B:  2, Resultado:  8
+Op: 100100, A:  4, B:  2, Resultado:  4
+Op: 100101, A:  5, B:  2, Resultado:  7
+Op: 100110, A:  6, B:  2, Resultado:  6
+Op: 000011, A:  3, B:  0, Resultado:  0
+Op: 000010, A:  2, B:  0, Resultado:  0
+Op: 100111, A:  7, B:  2, Resultado:  4
+$finish called at time : 880 ns : File "G:/ProjectsVivado/TP1_ALU/TP1_ALU.srcs/sim_1/new/tb_top.v" Line 97
+Stopped at time : 60 ns : File "G:/ProjectsVivado/TP1_ALU/TP1_ALU.srcs/sim_1/new/tb_top.v" Line 90
+Stopped at time : 110 ns : File "G:/ProjectsVivado/TP1_ALU/TP1_ALU.srcs/sim_1/new/tb_top.v" Line 94
+Stopped at time : 60 ns : File "G:/ProjectsVivado/TP1_ALU/TP1_ALU.srcs/sim_1/new/tb_top.v" Line 90
+Stopped at time : 110 ns : File "G:/ProjectsVivado/TP1_ALU/TP1_ALU.srcs/sim_1/new/tb_top.v" Line 94
+Op: 100000, A:  0, B:  2, Resultado:  2
+Stopped at time : 170 ns : File "G:/ProjectsVivado/TP1_ALU/TP1_ALU.srcs/sim_1/new/tb_top.v" Line 90
+Stopped at time : 220 ns : File "G:/ProjectsVivado/TP1_ALU/TP1_ALU.srcs/sim_1/new/tb_top.v" Line 94
+Op: 100010, A:  2, B:  2, Resultado:  8
+Stopped at time : 280 ns : File "G:/ProjectsVivado/TP1_ALU/TP1_ALU.srcs/sim_1/new/tb_top.v" Line 90
+Stopped at time : 60 ns : File "G:/ProjectsVivado/TP1_ALU/TP1_ALU.srcs/sim_1/new/tb_top.v" Line 90
+Stopped at time : 110 ns : File "G:/ProjectsVivado/TP1_ALU/TP1_ALU.srcs/sim_1/new/tb_top.v" Line 94
+Op: 100000, A:  0, B:  2, Resultado:  2
+Stopped at time : 170 ns : File "G:/ProjectsVivado/TP1_ALU/TP1_ALU.srcs/sim_1/new/tb_top.v" Line 90
+Stopped at time : 220 ns : File "G:/ProjectsVivado/TP1_ALU/TP1_ALU.srcs/sim_1/new/tb_top.v" Line 94
+Op: 100010, A:  2, B:  2, Resultado:  8
+Stopped at time : 280 ns : File "G:/ProjectsVivado/TP1_ALU/TP1_ALU.srcs/sim_1/new/tb_top.v" Line 90
+Stopped at time : 330 ns : File "G:/ProjectsVivado/TP1_ALU/TP1_ALU.srcs/sim_1/new/tb_top.v" Line 94
+Op: 100100, A:  4, B:  2, Resultado:  4
+Stopped at time : 390 ns : File "G:/ProjectsVivado/TP1_ALU/TP1_ALU.srcs/sim_1/new/tb_top.v" Line 90

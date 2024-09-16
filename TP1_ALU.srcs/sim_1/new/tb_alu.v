@@ -1,9 +1,9 @@
-`timescale 1ns / 1ps
+//`timescale 1ns / 1ps
 
 module tb_alu;  
 
     // Module parameters
-    parameter NB_DATA = 4;
+    parameter NB_DATA = 8;
     parameter NB_OP = 6;
     
     // Operations 

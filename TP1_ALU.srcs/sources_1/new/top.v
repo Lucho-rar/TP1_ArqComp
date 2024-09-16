@@ -1,8 +1,8 @@
-`timescale 1ns / 1ps
+//`timescale 1ns / 1ps
 
 module top
     #(
-    parameter NB_DATA=  4, //data
+    parameter NB_DATA=  8, //data
     parameter NB_OP = 6, //op
     parameter NB_BITS = 8, //bits of sw
     parameter NB_BUTTON = 3 //bits of btn

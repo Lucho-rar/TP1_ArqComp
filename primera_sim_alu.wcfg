@@ -11,17 +11,39 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="0 ps"></ZoomStartTime>
-      <ZoomEndTime time="5 ps"></ZoomEndTime>
-      <Cursor1Time time="167,790 ps"></Cursor1Time>
+      <ZoomStartTime time="323.544 ns"></ZoomStartTime>
+      <ZoomEndTime time="383.545 ns"></ZoomEndTime>
+      <Cursor1Time time="390.000 ns"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
-      <NameColumnWidth column_width="345"></NameColumnWidth>
-      <ValueColumnWidth column_width="90"></ValueColumnWidth>
+      <NameColumnWidth column_width="267"></NameColumnWidth>
+      <ValueColumnWidth column_width="156"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="0" />
+   <WVObjectSize size="5" />
    <wave_markers>
       <marker time="440000" label="" />
       <marker time="561546" label="" />
    </wave_markers>
+   <wvobject fp_name="/tb_top/op_codes" type="array">
+      <obj_property name="ElementShortName">op_codes[0:7][5:0]</obj_property>
+      <obj_property name="ObjectShortName">op_codes[0:7][5:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_top/i_switch" type="array">
+      <obj_property name="ElementShortName">i_switch[7:0]</obj_property>
+      <obj_property name="ObjectShortName">i_switch[7:0]</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_top/i_button" type="array">
+      <obj_property name="ElementShortName">i_button[2:0]</obj_property>
+      <obj_property name="ObjectShortName">i_button[2:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_top/i" type="array">
+      <obj_property name="ElementShortName">i[31:0]</obj_property>
+      <obj_property name="ObjectShortName">i[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_top/top_instance/o_leds" type="array">
+      <obj_property name="ElementShortName">o_leds[7:0]</obj_property>
+      <obj_property name="ObjectShortName">o_leds[7:0]</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+   </wvobject>
 </wave_config>

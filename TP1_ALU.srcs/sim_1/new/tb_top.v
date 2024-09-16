@@ -1,7 +1,7 @@
-`timescale 1ns / 1ps
+//`timescale 1ns / 1ps
 module tb_top();
 
-    parameter NB_DATA=  4; // Número de bits de los datos
+    parameter NB_DATA=  8; // Número de bits de los datos
     parameter NB_OP = 6;   // Número de bits de las operaciones
     parameter NB_BITS = 8; // Bits de los switches
     parameter NB_BUTTON = 3; // Bits de los botones
@@ -45,8 +45,13 @@ module tb_top();
     );
     
     // Generador del reloj
-    always #10 clk = ~clk;
-    
+    //always #10 clk = ~clk;
+    always begin
+        clk = 1'b0; 
+        #10;       // 10 ns a nivel bajo
+        clk = 1'b1;
+        #10;       // 10 ns a nivel alto
+    end
     // Bloque inicial
     initial begin 
         // Asignar las operaciones a los códigos

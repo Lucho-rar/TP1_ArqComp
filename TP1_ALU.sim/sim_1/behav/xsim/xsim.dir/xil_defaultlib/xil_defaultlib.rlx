@@ -5,5 +5,5 @@ May 22 2024
 G:/ProjectsVivado/TP1_ALU/TP1_ALU.sim/sim_1/behav/xsim/glbl.v,1708598507,verilog,,,,glbl,,,,,,,,
 G:/ProjectsVivado/TP1_ALU/TP1_ALU.srcs/sim_1/new/tb_alu.v,1726167917,verilog,,,,tb_alu,,,,,,,,
 G:/ProjectsVivado/TP1_ALU/TP1_ALU.srcs/sim_1/new/tb_top.v,1726271309,verilog,,,,tb_top,,,,,,,,
-G:/ProjectsVivado/TP1_ALU/TP1_ALU.srcs/sources_1/new/alu.v,1726267469,verilog,,G:/ProjectsVivado/TP1_ALU/TP1_ALU.srcs/sources_1/new/top.v,,alu,,,,,,,,
-G:/ProjectsVivado/TP1_ALU/TP1_ALU.srcs/sources_1/new/top.v,1726271043,verilog,,G:/ProjectsVivado/TP1_ALU/TP1_ALU.srcs/sim_1/new/tb_top.v,,top,,,,,,,,
+G:/ProjectsVivado/TP1_ALU/TP1_ALU.srcs/sources_1/new/alu.v,1726352038,verilog,,G:/ProjectsVivado/TP1_ALU/TP1_ALU.srcs/sources_1/new/top.v,,alu,,,,,,,,
+G:/ProjectsVivado/TP1_ALU/TP1_ALU.srcs/sources_1/new/top.v,1726271523,verilog,,G:/ProjectsVivado/TP1_ALU/TP1_ALU.srcs/sim_1/new/tb_top.v,,top,,,,,,,,

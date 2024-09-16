@@ -1,1 +1,3 @@
 Breakpoint File Version 1.0
+90,true,"G:/ProjectsVivado/TP1_ALU/TP1_ALU.srcs/sim_1/new/tb_top.v"
+94,true,"G:/ProjectsVivado/TP1_ALU/TP1_ALU.srcs/sim_1/new/tb_top.v"
