@@ -1,12 +1,17 @@
 //`timescale 1ns / 1ps
 module tb_top();
-
+    // parametros
     parameter NB_DATA=  8; // Número de bits de los datos
     parameter NB_OP = 6;   // Número de bits de las operaciones
     parameter NB_BITS = 8; // Bits de los switches
     parameter NB_BUTTON = 3; // Bits de los botones
+
+    //variables
     integer i; // Integer para iterar sobre las operaciones
     reg [NB_OP-1:0] op_codes[0:7]; // Arreglo con las operaciones
+    reg [NB_DATA-1:0] expected_result; // Resultado esperado
+    reg [NB_DATA-1:0] tmp_input_a;
+    reg [NB_DATA-1:0] tmp_input_b ;
     
     // Operaciones (codificación en binario)
     localparam ADD = 6'b100000;
@@ -19,15 +24,15 @@ module tb_top();
     localparam NOR = 6'b100111;
 
     // Botones (A, B, y OP)
-    localparam btn_data_a = 3'b001;
-    localparam btn_data_b = 3'b010;
-    localparam btn_data_op = 3'b100;
+    localparam BTN_DATA_A = 3'b001;
+    localparam BTN_DATA_B = 3'b010;
+    localparam BTN_DATA_OP = 3'b100;
 
     // Señales
     reg [NB_BITS-1:0] i_switch; // Entrada de switches
     reg [NB_BUTTON-1:0] i_button; // Entrada de botones
-    reg clk; // Señal de reloj
-    wire [NB_DATA-1:0] o_leds; // Salida de leds
+    reg i_clk; // Señal de reloj
+    wire signed [NB_DATA-1:0] o_leds; // Salida de leds
     
     // Instancia del módulo top
     top
@@ -40,16 +45,16 @@ module tb_top();
     top_instance(
         .i_switch(i_switch),
         .i_button(i_button),
-        .clk(clk),
+        .i_clk(i_clk),
         .o_leds(o_leds)
     );
     
     // Generador del reloj
-    //always #10 clk = ~clk;
+    //always #10 i_clk = ~i_clk;
     always begin
-        clk = 1'b0; 
+        i_clk = 1'b0; 
         #10;       // 10 ns a nivel bajo
-        clk = 1'b1;
+        i_clk = 1'b1;
         #10;       // 10 ns a nivel alto
     end
     // Bloque inicial
@@ -65,33 +70,52 @@ module tb_top();
         op_codes[7] = NOR;
 
         // Inicializar el reloj
-        clk = 0;
+        i_clk = 0;
 
         // Probar cada operación
         for (i = 0; i < 8; i = i + 1) begin
             // Asignar datos A y B aleatorios
             i_switch = {$urandom} & ((1 << NB_BITS) - 1); // Dato A
-            i_button = btn_data_a;  // Seleccionar botón para A
+            i_button = BTN_DATA_A;  // Seleccionar botón para A
+            tmp_input_a = i_switch;
+            
             #20;
             i_button = 3'b000;     // Desactivar botón
 
             i_switch = {$urandom} & ((1 << NB_BITS) - 1); // Dato B
-            i_button = btn_data_b;  // Seleccionar botón para B
+            i_button = BTN_DATA_B;  // Seleccionar botón para B
+            tmp_input_b = i_switch;
+            
             #20;
             i_button = 3'b000;     // Desactivar botón
 
             // Asignar operación
             i_switch = op_codes[i]; 
-            i_button = btn_data_op; // Seleccionar botón para OP
+            i_button = BTN_DATA_OP; // Seleccionar botón para OP
             #20;
             i_button = 3'b000;     // Desactivar botón
 
             // Esperar un ciclo de reloj para ver el resultado
             #50;
-
-            // Mostrar resultados
-            //$display("Op: %b, A: %d, B: %d, Resultado: %d", op_codes[i], i_data_a, i_data_b, o_leds[3:0]);
-            $display("Op: %b, A: %d, B: %d, Resultado: %d", op_codes[i], i_switch[3:0], i_switch[7:4], o_leds[3:0]);
+            
+            case (op_codes[i])
+                ADD: expected_result = (tmp_input_a + tmp_input_b);  // A + B
+                SUB: expected_result = (tmp_input_a - tmp_input_b);  // A - B
+                AND: expected_result = (tmp_input_a & tmp_input_b);  // A & B
+                OR:  expected_result = (tmp_input_a | tmp_input_b);  // A | B
+                XOR: expected_result = (tmp_input_a ^ tmp_input_b);  // A ^ B
+                SRA: expected_result = (tmp_input_a >>> tmp_input_b);            // Shift Right Arithmetic
+                SRL: expected_result = (tmp_input_a >> tmp_input_b);             // Shift Right Logical
+                NOR: expected_result = ~(tmp_input_a | tmp_input_b); // A NOR B
+                default: expected_result = {NB_DATA{1'b0}};
+            endcase
+            
+            if (o_leds !== expected_result) begin
+                //$display("TEST FAILED: A = %d '%b' ---- B = %d %b ---- OP = %b", tmp_input_a,tmp_input_a, tmp_input_b,tmp_input_b, op_codes[i]);
+            end else begin
+                $display("TEST PASS");
+                //$display("TEST PASS: A = %d '%b' ---- B = %d %b ---- OP = %b ---- OUT = %d '%b' -> EXPECTED = %d '%b'", tmp_input_a,tmp_input_a, tmp_input_b,tmp_input_b, op_codes[i], o_leds, o_leds, expected_result, expected_result );
+            end
         end
         
         $finish; // Terminar la simulación

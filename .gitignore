@@ -10,3 +10,4 @@
 .vscode/
 .history/
 *.code-workspace
+TP1_ALU.sim/sim_1/impl/timing/xsim/simulate.log
