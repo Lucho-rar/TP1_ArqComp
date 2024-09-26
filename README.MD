@@ -5,6 +5,9 @@
 # Arquitectura de Computadoras 2024
 ## _TP#1 : ALU FPGA_
 
+@ Rodriguez Luciano Ariel
+
+@ Hernando Agustin
 ## Enunciado
 
 - Implementar en FPGA una ALU.
@@ -26,8 +29,10 @@
 | SRL       | 000010   |
 | NOR       | 100111   |
 
+
+
 <p align="center">
-  <img src="./img/arq.png"><br>
+  <br><img src="./img/arq.png"><br>
   <em>Fig. Arquitectura</em>
 </p>
 
@@ -35,63 +40,76 @@
 
 ### ALU
 
-```verilog
-`timescale 1ns / 1ps
+En primera instancia se define el módulo ALU. Este modulo se encarga de realizar las operaciones definidas segun las entradas que ingresan. 
 
-module alu #
-(
-    parameter NB_DATA=  4,
-    parameter NB_OP = 6
+Para empezar el creamos el modulo siguiendo las caracteristicas del enunciado. Los `parametros` son la cantidad de bits de los operandos `8 bits` y además se define la cantidad de bits que tiene la entrada que define el codigo de operación `6 bits`. 
+
+Luego tenemos las entradas al módulo `i_data_a`, `i_data_b`, `i_data_op` que representan el `operando A`, `operando B`, y el `codigo de operacion OP`. De aca resaltamos que son entradas y salidas signadas, excepto el código de operacion.
+
+
+
+```verilog
+module alu #                                //parametros
+(       
+    parameter NB_DATA=  8,                  //bits de datos
+    parameter NB_OP = 6                     //bits de operacion  
 )
 (
-    output signed [NB_DATA-1:0] o_data, //ouput
-    input signed [NB_DATA-1:0] i_data_a, //input A
-    input signed [NB_DATA-1:0] i_data_b, //input B
-    input [NB_OP-1:0] i_data_op // input OP
+    output signed [NB_DATA-1:0] o_data,     //ouput data
+    input signed [NB_DATA-1:0] i_data_a,    //input A data
+    input signed [NB_DATA-1:0] i_data_b,    //input B data
+    input [NB_OP-1:0] i_data_op             //input OP data
     
 );
-
-// tmp
-reg [NB_DATA-1:0] tmp;
-
-//always
-always@(*) begin
-    case (i_data_op)
-        6'b100000: tmp = i_data_a + i_data_b;       //ADD
-        6'b100010: tmp = i_data_a - i_data_b;       //SUB
-        6'b100100: tmp = i_data_a & i_data_b;       //AND
-        6'b100101: tmp = i_data_a | i_data_b;       //OR
-        6'b100110: tmp = i_data_a ^ i_data_b;       //XOR
-        6'b000011: tmp = i_data_a >>> i_data_b;     //SRA
-        6'b000010: tmp = i_data_a >> i_data_b;      //SRL
-        6'b100111: tmp = ~(i_data_a | i_data_b);    //NOR
-        default: tmp = 0;                           //default
-    endcase
-end
-
-assign o_data = tmp;
-endmodule
-
 ```
-<p align="center">
-  <img src="./img/rtl.png"><br>
-  <em>Fig. RTL</em>
-<<<<<<< HEAD
-</p>
 
-Primera simulacion
+La lógica de cada operación se va a realizar en un bloque `always`, donde no podemos asignar directamente el valor de nuestro resultado `output` que es un `wire`. Esto es porque el `wire` representa una señal de conexion continua, y nosotros tratamos el modulo como puramente combinacional, es decir se calculan en momentos especificos los valores de resultado segun las variaciones de ciertas entradas. Por todo esto, necesitamos un registro auxiliar que modificaremos como si fuera nuestro resultado, y que nos va a servir para asignarle el mismo valor, fuera del always, a la señal de salida.
 
 ```verilog
-`timescale 1ns / 1ps
+reg [NB_DATA-1:0] r_alu_result;     //registro temporal de resultado 
+```
 
+Ahora si vamos con el bloque always donde se asignaran los resultados segun la operacion. También, vale aclarar que el bloque funciona como `always @(*)`, es decir, de manera combinacional. Esto hace que se ingrese al bloque cada vez que varíen las señales que utilizamos dentro de él. 
+
+```verilog
+always@(*) begin
+    case (i_data_op)                                        //segun la operacion
+        6'b100000: r_alu_result = i_data_a + i_data_b;      //ADD
+        6'b100010: r_alu_result = i_data_a - i_data_b;      //SUB
+        6'b100100: r_alu_result = i_data_a & i_data_b;      //AND
+        6'b100101: r_alu_result = i_data_a | i_data_b;      //OR
+        6'b100110: r_alu_result = i_data_a ^ i_data_b;      //XOR
+        6'b000011: r_alu_result = i_data_a >>> i_data_b;    //SRL
+        6'b000010: r_alu_result = i_data_a >> i_data_b;     //SRA
+        6'b100111: r_alu_result = ~(i_data_a | i_data_b);   //NOR
+        default: r_alu_result =  {NB_DATA{1'b0}};           //default
+    endcase
+end
+```
+Dejamos de manera descriptiva los casos de las operaciones pero podemos asignarle tags de manera más amigable con `localparam`. Finalmente realizamos el `assign` del output con nuestro registro temporal.
+
+```verilog
+assign o_data = r_alu_result;       //asignacion de resultado a output
+```
+
+<p align="center">
+  <img src="./img/rtl.png"><br>
+  <em>Fig. Diagrama RTL</em>
+</p>
+
+#### Testbench ALU
+
+Una vez definido el modulo podemos simular el comportamiento del mismo mediante los testbenchs. Para esto volvemos a definir un modulo pero que no tiene entradas ni salidas sino que se mapea sobre el modulo que teniamos antes.  Para esto volvemos a declarar, los `parameter`'s, usamos `localparam` para las operaciones, registros signados que representan las entradas y salidas, y también registros auxiliares.
+
+```verilog
 module tb_alu;  
 
-    // Module parameters
-    parameter NB_DATA = 4;
+    
+    parameter NB_DATA = 8;                  // Parametros
     parameter NB_OP = 6;
     
-    // Operations 
-    localparam ADD = 6'b100000;
+                                
+    localparam ADD = 6'b100000;             // Operaciones 
     localparam SUB = 6'b100010;
     localparam AND = 6'b100100;
     localparam OR = 6'b100101;
@@ -100,80 +118,66 @@ module tb_alu;
     localparam SRL = 6'b000010;
     localparam NOR = 6'b100111;
     
-    integer i; // Integer for index operations
-    reg [NB_OP-1:0] op_codes[0:7]; // Arrays of operations
+    integer i;                              // Entero auxiliar para iteraciones
+    reg [NB_OP-1:0] tb_op_codes[0:7];       // Arreglo de operaciones auxiliar
     
-    //Signals for testbench
-    reg signed [NB_DATA-1:0] i_data_a; // Input A
-    reg signed [NB_DATA-1:0] i_data_b; // Input B
-    reg [NB_OP-1:0] i_data_op; // Input OP
-    wire signed [NB_DATA-1:0] o_data; // Output
 
-    reg signed [NB_DATA-1:0] expected_data; // Reg for compare
+    reg signed [NB_DATA-1:0] tb_i_data_a;   // Input A data
+    reg signed [NB_DATA-1:0] tb_i_data_b;   // Input B data
+    reg [NB_OP-1:0] tb_i_data_op;           // Input OP data
+    wire signed [NB_DATA-1:0] tb_o_data;    // Output data
 
-    // Alu instance
-    alu #(.NB_DATA(NB_DATA), .NB_OP(NB_OP)) uut (
-        .i_data_a(i_data_a),
-        .i_data_b(i_data_b),
-        .i_data_op(i_data_op),
-        .o_data(o_data)
+    reg signed [NB_DATA-1:0] expected_data; // Registro para comparar
+```
+
+Ahora hacemos una instancia del modulo de la ALU, con respecto a nuestros registros. 
+
+```verilog
+alu #(.NB_DATA(NB_DATA), .NB_OP(NB_OP)) uut (
+        .i_data_a(tb_i_data_a),
+        .i_data_b(tb_i_data_b),
+        .i_data_op(tb_i_data_op),
+        .o_data(tb_o_data)
     );
-    
-    
-    initial begin
-        //Assign operations to array
-        op_codes[0] = ADD;
-        op_codes[1] = SUB;
-        op_codes[2] = AND;
-        op_codes[3] = OR;
-        op_codes[4] = XOR;
-        op_codes[5] = SRA;
-        op_codes[6] = SRL;
-        op_codes[7] = NOR;
-        
-        $monitor("Time: %0t | A = %d | B = %d | OP = %b | Result = %d | Expected = %d", 
-                 $time, i_data_a, i_data_b, i_data_op, o_data, expected_data);
-                 
-        for (i = 0; i < 8; i = i + 1) begin
-            i_data_a = $random % (1 << NB_DATA);  // Randon of [-8,7] range
-            i_data_b = $random % (1 << NB_DATA);  // Randon of [-8,7] range
-            
-            i_data_op = op_codes[i]; // Op code
+```
 
-            case (i_data_op)
-                ADD: expected_data = i_data_a + i_data_b;
-                SUB: expected_data = i_data_a - i_data_b;
-                AND: expected_data = i_data_a & i_data_b;
-                OR: expected_data = i_data_a | i_data_b;
-                XOR: expected_data = i_data_a ^ i_data_b;
-                SRA: expected_data = i_data_a >>> i_data_b;
-                SRL: expected_data = i_data_a >> i_data_b;
-                NOR: expected_data = ~(i_data_a | i_data_b);
-                default: expected_data = 4'b0000;
+Y finalmente en un bloque `initial`, aparte de asignaciones, realizamos calculos y se chequean los resultados. En este caso, usamos el arreglo de operaciones y recorremos el mismo aplicandolo sobre los operandos.
+
+```verilog
+ for (i = 0; i < 8; i = i + 1) begin
+            tb_i_data_a = $random % (1 << NB_DATA);  // Randon en rango [-8,7]
+            tb_i_data_b = $random % (1 << NB_DATA);  // Randon en rango [-8,7]
+            
+            tb_i_data_op = tb_op_codes[i];           // Codigo de operacion
+
+            case (tb_i_data_op)
+                ADD: expected_data = tb_i_data_a + tb_i_data_b;
+                SUB: expected_data = tb_i_data_a - tb_i_data_b;
+                AND: expected_data = tb_i_data_a & tb_i_data_b;
+                OR: expected_data = tb_i_data_a | tb_i_data_b;
+                XOR: expected_data = tb_i_data_a ^ tb_i_data_b;
+                SRA: expected_data = tb_i_data_a >>> tb_i_data_b;
+                SRL: expected_data = tb_i_data_a >> tb_i_data_b;
+                NOR: expected_data = ~(tb_i_data_a | tb_i_data_b);
+                default: expected_data = {NB_DATA{1'b0}}; 
             endcase
 
-            #10; // Wait 10 units time 
+            #10; // Wait
 
-            if (o_data !== expected_data) begin //Check response
+            if (tb_o_data !== expected_data) begin //Check respuesta
                 $display("ERROR: A = %d, B = %d, OP = %b, Esperado = %d, Obtenido = %d",
-                         i_data_a, i_data_b, i_data_op, expected_data, o_data);
+                         tb_i_data_a, tb_i_data_b, tb_i_data_op, expected_data, tb_o_data);
             end else begin
                 $display("OK: A = %d, B = %d, OP = %b, Resultado = %d", 
-                         i_data_a, i_data_b, i_data_op, o_data);
+                         tb_i_data_a, tb_i_data_b, tb_i_data_op, tb_o_data);
             end
         end
-        
-        $finish;
-    end
-
-endmodule
 ```
+
+Podemos chequear los resultados utilizando las utilidades de waveforms de Vivado
 
 <p align="center">
   <img src="./img/primera_simulacion.png"><br>
-  <em>Fig. primera simulacion</em>
+  <em>Fig. TestBench ALU.</em>
 </p>
 
-=======
-</p>
->>>>>>> 4dd75f18989a3dde6170225fe08873b7885a55f9
