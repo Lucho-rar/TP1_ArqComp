@@ -42,7 +42,7 @@
 
 En primera instancia se define el módulo ALU. Este modulo se encarga de realizar las operaciones definidas segun las entradas que ingresan. 
 
-Para empezar el creamos el modulo siguiendo las caracteristicas del enunciado. Los `parametros` son la cantidad de bits de los operandos `8 bits` y además se define la cantidad de bits que tiene la entrada que define el codigo de operación `6 bits`. 
+Para empezar creamos el modulo siguiendo las caracteristicas del enunciado. Los `parametros` son la cantidad de bits de los operandos y del codigo de operacion, por defecto el modulo define como `8 bits` para los operandos y de`6 bits` para el código de operación. 
 
 Luego tenemos las entradas al módulo `i_data_a`, `i_data_b`, `i_data_op` que representan el `operando A`, `operando B`, y el `codigo de operacion OP`. De aca resaltamos que son entradas y salidas signadas, excepto el código de operacion.
 
@@ -92,8 +92,10 @@ Dejamos de manera descriptiva los casos de las operaciones pero podemos asignarl
 assign o_data = r_alu_result;       //asignacion de resultado a output
 ```
 
+Podemos observar por lo tanto en el multiplexor a la variable temporal de forma esquematica:
+
 <p align="center">
-  <img src="./img/rtl.png"><br>
+  <img src="./img/rtl1.png"><br>
   <em>Fig. Diagrama RTL</em>
 </p>
 
@@ -181,3 +183,85 @@ Podemos chequear los resultados utilizando las utilidades de waveforms de Vivado
   <em>Fig. TestBench ALU.</em>
 </p>
 
+### TOP
+
+El TOP es el código que instanciará y hará uso a los submodulos como lo es el modulo ALU, la idea aquí es utilizar los switches físicos de la placa para cargar los valores del operando A, operando B y codigo de operación.
+
+Los `parametros` son, al igual que el modulo de ALU, la cantidad de bits de los operandos y codigo de operación, adicionalmente se añaden un parámetro para definir la cantidad de bits del switch, en este caso `8 bits` y otro parametro para definir la cantidad de bits para los botones, en este caso `3 bits`.
+
+A continuación se definen las entradas y salidas del módulo, siendo las entradas el botón A, botón B y el botón OP definidas en el array `i_button` y el `i_switch` donde se configurará la palabra de bits a ingresar, por otro lado la salida será el resultado de enviar los operandos y el codigo de operacion a la ALU. Se podrá visualizar el resultado, por ejemplo, en los leds de la placa.
+
+
+```verilog
+module top                              //parametros
+#(
+    parameter NB_DATA=  8,              //data
+    parameter NB_OP = 6,                //op
+    parameter NB_BITS = 8,              //bits of sw
+    parameter NB_BUTTON = 3             //bits of btn
+)
+(
+    input wire [NB_BITS-1:0] i_switch,  //input of switch
+    input wire [NB_BUTTON-1:0] i_button,//input of buttons
+    input wire i_clk,                   //input clock
+    output signed [NB_DATA-1:0] o_leds  //output of leds
+);
+```
+
+Se definen parámetros locales para simplificar la lectura del código
+```verilog
+localparam BTN_DATA_A = 3'b001;
+localparam BTN_DATA_B = 3'b010;
+localparam BTN_DATA_OP = 3'b100;
+```
+
+Los siguientes registros son internos al módulo, esto es necesario puesto que las entradas son tipo `wire` y necesitamos guardar el estado de los cambios de las entradas en registros.
+
+```verilog
+reg [NB_DATA-1:0] alu_data_a;
+reg [NB_DATA-1:0] alu_data_b;
+reg [NB_OP-1:0] alu_data_op;
+```
+
+Se instancian el modulo ALU, aqui mapeamos los registros a los `wire`s del módulo para conectar y enviar la información:
+```verilog
+alu
+#(
+    .NB_DATA(NB_DATA),
+    .NB_OP(NB_OP)
+)
+alu_instance(
+    .i_data_a(alu_data_a),
+    .i_data_b(alu_data_b),
+    .i_data_op(alu_data_op),
+    .o_data(o_leds)
+);
+```
+
+Por último en el bloque `always` secuencial, el cual se activa con el flanco positivo del clock (`posedge i_clk`). Las operaciones suceden de forma sincrona con el clock capturando los datos de entrada cuando ocurre un flanco positivo y actualizando los registros de acuerdo al botón presionado.
+
+La asignacion `<=` es no bloqueante por lo que permite que todas las operaciones dentro del bloque `always` se ejecuten simultáneamente.
+
+`inputs` es una etiqueta que sirve para hacer el código mas legible.
+
+```verilog
+always@(posedge i_clk) begin:inputs
+    case(i_button)
+    BTN_DATA_A: alu_data_a <= i_switch;
+    BTN_DATA_B: alu_data_b <= i_switch;
+    BTN_DATA_OP: alu_data_op <= i_switch;
+    endcase;
+end
+```
+
+Podemos observar como se asigna el valor del switch de acuerdo al boton presionado a las diferentes entradas de la ALU:
+<p align="center">
+  <img src="./img/rtl2.png"><br>
+  <em>Fig. Diagrama RTL</em>
+</p>
+
+### Constraint y configuracion de la placa
+
+### Pruebas
+
+### Conclusiones
