@@ -260,8 +260,145 @@ Podemos observar como se asigna el valor del switch de acuerdo al boton presiona
   <em>Fig. Diagrama RTL</em>
 </p>
 
+#### Testbench Top
+Siguiendo la modalidad que usamos con el testbench del modulo de la ALU, realizamos el testbench del TOP. Para no extender en el informe, omitimos la redeclaración de parametros y registros que usamos, de tal manera la instancia queda como:
+
+```verilog
+top
+#(
+    .NB_BUTTON(NB_BUTTON),
+    .NB_OP(NB_OP),
+    .NB_DATA(NB_DATA),
+    .NB_BITS(NB_BITS)
+)
+top_instance(
+    .i_switch(i_switch),
+    .i_button(i_button),
+    .i_clk(i_clk),
+    .o_leds(o_leds)
+);
+```
+
+Y para generar las pruebas y chequeos automatizados tenemos en el bloque initial
+```verilog
+        // Inicializar el reloj
+        i_clk = 0;
+
+        // Probar cada operación
+        for (i = 0; i < 8; i = i + 1) begin
+            // Asignar datos A y B aleatorios
+            i_switch = {$urandom} & ((1 << NB_BITS) - 1); // Dato A
+            i_button = BTN_DATA_A;  // Seleccionar botón para A
+            tmp_input_a = i_switch;
+            
+            #20;
+            i_button = 3'b000;     // Desactivar botón
+
+            i_switch = {$urandom} & ((1 << NB_BITS) - 1); // Dato B
+            i_button = BTN_DATA_B;  // Seleccionar botón para B
+            tmp_input_b = i_switch;
+            
+            #20;
+            i_button = 3'b000;     // Desactivar botón
+
+            // Asignar operación
+            i_switch = op_codes[i]; 
+            i_button = BTN_DATA_OP; // Seleccionar botón para OP
+            #20;
+            i_button = 3'b000;     // Desactivar botón
+
+            // Esperar un ciclo de reloj para ver el resultado
+            #50;
+            
+            case (op_codes[i])
+                ADD: expected_result = (tmp_input_a + tmp_input_b);  // A + B
+                SUB: expected_result = (tmp_input_a - tmp_input_b);  // A - B
+                AND: expected_result = (tmp_input_a & tmp_input_b);  // A & B
+                OR:  expected_result = (tmp_input_a | tmp_input_b);  // A | B
+                XOR: expected_result = (tmp_input_a ^ tmp_input_b);  // A ^ B
+                SRA: expected_result = (tmp_input_a >>> tmp_input_b); // SRA
+                SRL: expected_result = (tmp_input_a >> tmp_input_b);  // SRL
+                NOR: expected_result = ~(tmp_input_a | tmp_input_b); // A NOR B
+                default: expected_result = {NB_DATA{1'b0}}; // DEFAULT
+            endcase
+            
+            if (o_leds !== expected_result) begin
+            end else begin
+                $display("TEST PASS");
+            end
+        end
+```
+
+Como en este caso tenemos el clock, a diferencia del testbench de la ALU, lo definimos variandolo con el generador dentro del testbench
+```verilog
+always begin
+    i_clk = 1'b0; 
+    #10;       // 10 ns a nivel bajo
+    i_clk = 1'b1;
+    #10;       // 10 ns a nivel alto
+end
+```
+O reducido a una linea 
+```verilog
+always #10 i_clk = ~i_clk;
+```
+
+<p align="center">
+  <br><img src="./img/one_step_top.png"><br>
+  <em>Fig. Un step de simulacion del modulo top.</em>
+</p>
+
+<p align="center">
+  <br><img src="./img/top_complete.png"><br>
+  <em>Fig. Simulacion completa.</em>
+</p>
+
 ### Constraint y configuracion de la placa
+Para bajar el programa a la placa necesitamos definir el constraint para mapear los pines a nuestras entradas y salidas establecidas. Para esto nos apoyamos en la documentacion de la placa, en nuestras pruebas, la Nexys4 DDR, donde el fabricante tambien brinda un template con todos los pines lo que facilita la configuracion.
+
+<p align="center">
+  <br><img src="./img/nexys.png"><br>
+  <em>Fig. Nexys 4 DDR.</em>
+</p>
+
+```tcl
+## Clock signal
+set_property -dict { PACKAGE_PIN E3    IOSTANDARD LVCMOS33 } [get_ports { clk }]; #IO_L12P_T1_MRCC_35 Sch=clk100mhz
+create_clock -add -name sys_clk_pin -period 10.00 -waveform {0 5} [get_ports {clk}];
+
+##Switches
+
+set_property -dict { PACKAGE_PIN J15   IOSTANDARD LVCMOS33 } [get_ports { i_switch[0] }]; #IO_L24N_T3_RS0_15 Sch=sw[0]
+set_property -dict { PACKAGE_PIN L16   IOSTANDARD LVCMOS33 } [get_ports { i_switch[1] }]; #IO_L3N_T0_DQS_EMCCLK_14 Sch=sw[1]
+set_property -dict { PACKAGE_PIN M13   IOSTANDARD LVCMOS33 } [get_ports { i_switch[2] }]; #IO_L6N_T0_D08_VREF_14 Sch=sw[2]
+set_property -dict { PACKAGE_PIN R15   IOSTANDARD LVCMOS33 } [get_ports { i_switch[3] }]; #IO_L13N_T2_MRCC_14 Sch=sw[3]
+set_property -dict { PACKAGE_PIN R17   IOSTANDARD LVCMOS33 } [get_ports { i_switch[4] }]; #IO_L12N_T1_MRCC_14 Sch=sw[4]
+set_property -dict { PACKAGE_PIN T18   IOSTANDARD LVCMOS33 } [get_ports { i_switch[5] }]; #IO_L7N_T1_D10_14 Sch=sw[5]
+set_property -dict { PACKAGE_PIN U18   IOSTANDARD LVCMOS33 } [get_ports { i_switch[6] }]; #IO_L17N_T2_A13_D29_14 Sch=sw[6]
+set_property -dict { PACKAGE_PIN R13   IOSTANDARD LVCMOS33 } [get_ports { i_switch[7] }]; #IO_L5N_T0_D07_14 Sch=sw[7]
+
+## LEDs
+
+set_property -dict { PACKAGE_PIN H17   IOSTANDARD LVCMOS33 } [get_ports { o_leds[0] }]; #IO_L18P_T2_A24_15 Sch=led[0]
+set_property -dict { PACKAGE_PIN K15   IOSTANDARD LVCMOS33 } [get_ports { o_leds[1] }]; #IO_L24P_T3_RS1_15 Sch=led[1]
+set_property -dict { PACKAGE_PIN J13   IOSTANDARD LVCMOS33 } [get_ports { o_leds[2] }]; #IO_L17N_T2_A25_15 Sch=led[2]
+set_property -dict { PACKAGE_PIN N14   IOSTANDARD LVCMOS33 } [get_ports { o_leds[3] }]; #IO_L8P_T1_D11_14 Sch=led[3]
+set_property -dict { PACKAGE_PIN R18   IOSTANDARD LVCMOS33 } [get_ports { o_leds[4] }]; #IO_L7P_T1_D09_14 Sch=led[4]
+set_property -dict { PACKAGE_PIN V17   IOSTANDARD LVCMOS33 } [get_ports { o_leds[5] }]; #IO_L18N_T2_A11_D27_14 Sch=led[5]
+set_property -dict { PACKAGE_PIN U17   IOSTANDARD LVCMOS33 } [get_ports { o_leds[6] }]; #IO_L17P_T2_A14_D30_14 Sch=led[6]
+set_property -dict { PACKAGE_PIN U16   IOSTANDARD LVCMOS33 } [get_ports { o_leds[7] }]; #IO_L18P_T2_A12_D28_14 Sch=led[7]
+
+##Buttons
+
+set_property -dict { PACKAGE_PIN N17   IOSTANDARD LVCMOS33 } [get_ports { i_button[0] }]; #IO_L9P_T1_DQS_14 Sch=btnc
+set_property -dict { PACKAGE_PIN M18   IOSTANDARD LVCMOS33 } [get_ports { i_button[1] }]; #IO_L4N_T0_D05_14 Sch=btnu
+set_property -dict { PACKAGE_PIN P17   IOSTANDARD LVCMOS33 } [get_ports { i_button[2] }]; #IO_L12P_T1_MRCC_14 Sch=btnl
+
+```
 
 ### Pruebas
 
-### Conclusiones
+[![Test](https://img.youtube.com/vi/ytARvTIOmVs/mqdefault.jpg)](https://www.youtube.com/watch?v=ytARvTIOmVs)
+
+[![Test](https://img.youtube.com/vi/9557umlDE3E/mqdefault.jpg)](https://www.youtube.com/watch?v=9557umlDE3E)
+
