@@ -397,8 +397,24 @@ set_property -dict { PACKAGE_PIN P17   IOSTANDARD LVCMOS33 } [get_ports { i_butt
 ```
 
 ### Pruebas
+<div align="center">
 
 [![Test](https://img.youtube.com/vi/ytARvTIOmVs/mqdefault.jpg)](https://www.youtube.com/watch?v=ytARvTIOmVs)
 
+**Video 1**
+
+<br>
+
 [![Test](https://img.youtube.com/vi/9557umlDE3E/mqdefault.jpg)](https://www.youtube.com/watch?v=9557umlDE3E)
 
+**Video 2**
+
+</div>
+
+## Conclusión
+
+A lo largo de este trabajo práctico, logramos aplicar y afianzar conceptos fundamentales del diseño digital utilizando **Verilog**, un **lenguaje de descripción de hardware (HDL)**. Se implementó con éxito una **Unidad Aritmético-Lógica (ALU)** en una **FPGA**, respetando las especificaciones del enunciado y asegurando su funcionamiento mediante **testbenches** que incluyeron la generación de entradas aleatorias y su respectiva verificación.
+
+Durante el desarrollo, comprendimos las diferencias entre **bloques secuenciales** y **combinacionales** en Verilog, utilizando el bloque **`always`**. El uso de **registros temporales** nos permitió manejar señales de manera adecuada y garantizar la correcta asignación de resultados en **bloques combinacionales**. Además, se optó por modificar la lógica del uso de entradas controladas por botones al uso del **flanco de subida del reloj (`posedge i_clk`)**, lo que simplificó el manejo de señales y mejoró la **sincronización** del diseño.
+
+Por último, la **simulación** y **validación del diseño** a través de las herramientas de simulación de **Vivado** nos permitió analizar el comportamiento temporal y asegurar que la **ALU** funcionara correctamente.
